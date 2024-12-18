@@ -5,7 +5,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-transit = "9mwAa7UueUoYthqYgMDDchzktvzWZHHmsccsE8KKXBt9"
+transit = "DLzH1giBHuB1YDDfbiimgmcEUSAwWT8vK7BdHK8idauj"
 
 [registry]
 url = "https://api.apr.dev"

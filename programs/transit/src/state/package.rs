@@ -19,6 +19,11 @@ pub struct Package {
 impl Package {
     pub fn get_next_courier(&self, current: Pubkey) -> Option<Pubkey> {
         let current_index = self.couriers.iter().position(|c| c.courier == current)?;
+
+        if current_index + 1 >= self.couriers.len() {
+            return None;
+        }
+
         self.couriers.get(current_index + 1).map(|c| c.courier)
     }
 }

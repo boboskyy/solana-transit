@@ -5,7 +5,7 @@ import * as forge from 'node-forge';
 import { BN, Program } from '@coral-xyz/anchor';
 import { Transit } from '../target/types/transit';
 import { program } from '@coral-xyz/anchor/dist/cjs/native/system';
-import { expect } from 'chai';
+import { assert, expect } from 'chai';
 const chalk = require('chalk');
 
 const IDL = require('../target/idl/transit.json');
@@ -13,6 +13,8 @@ const IDL = require('../target/idl/transit.json');
 const walletA = Keypair.generate();
 const courierB = Keypair.generate();
 const courierC = Keypair.generate();
+
+const maliciousCourier = Keypair.generate();
 
 const courierBKeys = generateRSAKeyPair();
 const courierCKeys = generateRSAKeyPair();
@@ -53,6 +55,7 @@ describe('Transit Package Tests', () => {
     await airdrop(walletA.publicKey, 10 * LAMPORTS_PER_SOL);
     await airdrop(courierB.publicKey, 10 * LAMPORTS_PER_SOL);
     await airdrop(courierC.publicKey, 10 * LAMPORTS_PER_SOL);
+    await airdrop(maliciousCourier.publicKey, 10 * LAMPORTS_PER_SOL);
 
     packagePDA = await PublicKey.findProgramAddressSync(
       [Buffer.from(package_name), Buffer.from(package_public_info)],
@@ -112,6 +115,26 @@ describe('Transit Package Tests', () => {
     expect(packageAccountData.confirmations[0].deliveredAt.toNumber()).to.be.greaterThan(0);
     expect(packageAccountData.confirmations[0].deliveredAt.toNumber()).to.be.greaterThanOrEqual(packageAccountData.confirmations[0].receivedAt.toNumber());
   });
+
+  it("malicious courier should not be able to accept the package", async () => {
+    try {
+      await transitProgram.methods
+        .confirmPickup(package_name, package_public_info)
+        .accounts({
+          package: packagePDA,
+          courier: maliciousCourier.publicKey,
+          receiver: courierB.publicKey,
+        })
+        .signers([maliciousCourier])
+        .rpc();
+
+      throw new Error("Test failed: Expected an error, but the transaction succeeded.");
+    } catch (e) {
+      assert.ok(e, "Expected an error to be thrown, but none was.");
+      console.log("Error caught as expected:", e);
+    }
+  });
+
 
   it("second courier should accept the package", async () => {
 

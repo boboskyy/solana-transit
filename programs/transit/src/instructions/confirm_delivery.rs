@@ -39,6 +39,11 @@ pub fn confirm_delivery(
 
         let reward_lamports = final_courier_profile.delivery_reward_lamports;
 
+        require!(
+            **package.to_account_info().lamports.borrow() >= reward_lamports,
+            TransitError::InsufficientLamports
+        );
+
         **package.to_account_info().lamports.borrow_mut() -= reward_lamports;
         **courier.to_account_info().lamports.borrow_mut() += reward_lamports;
 

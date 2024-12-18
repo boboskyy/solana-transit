@@ -22,6 +22,21 @@ pub fn initialize_package(
     let package = &mut context.accounts.package;
 
     require!(
+        package_id.len() > 0 && package_id.len() <= 128,
+        TransitError::InvalidPackageId
+    );
+
+    require!(
+        package_id.chars().all(|c| c.is_alphanumeric() || c == '_'),
+        TransitError::InvalidPackageId
+    );
+
+    require!(
+        public_package_info.len() <= 256,
+        TransitError::InvalidPublicPackageInfo
+    );
+
+    require!(
         couriers.len() <= constants::COURIER_LIMIT,
         TransitError::TooManyCouriers
     );

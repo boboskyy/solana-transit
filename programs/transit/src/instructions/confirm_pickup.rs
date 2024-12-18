@@ -64,6 +64,11 @@ pub fn confirm_pickup(
                 return Err(TransitError::InvalidRewardAccount.into());
             }
 
+            require!(
+                **package.to_account_info().lamports.borrow() >= reward_lamports,
+                TransitError::InsufficientLamports
+            );
+
             **package.to_account_info().lamports.borrow_mut() -= reward_lamports;
             **receiver.lamports.borrow_mut() += reward_lamports;
 
@@ -90,6 +95,7 @@ pub struct ConfirmPickup<'info> {
     )]
     pub package: Account<'info, Package>,
 
+    /// CHECK
     #[account(mut)]
     pub receiver: AccountInfo<'info>,
     pub courier: Signer<'info>,
