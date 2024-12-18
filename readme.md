@@ -1,3 +1,6 @@
+![alt text](img/logo.png)
+
+
 # Solana Transit
 
 **Solana Transit** is a decentralized package delivery management system built on the Solana blockchain. It enables the transparent, secure, and immutable tracking of packages as they are transported by multiple couriers. The system ensures that each courier receives their rewards only upon successful delivery and provides a tamper-proof history of the entire delivery process.
